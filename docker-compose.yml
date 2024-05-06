@@ -1,0 +1,19 @@
+version: '3.3'
+
+services:
+  mysql-db:
+    image: mysql:8.0.33
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      #      MYSQL_DATABASE: auth
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-db:/var/lib/mysql
+    restart: on-failure
+
+volumes:
+  mysql-db:
+    driver: local
