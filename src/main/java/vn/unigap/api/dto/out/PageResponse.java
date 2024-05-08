@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class BaseResponse<T> {
+public class PageResponse<T> {
   private Integer page;
   private Integer pageSize;
   private Long totalElements;

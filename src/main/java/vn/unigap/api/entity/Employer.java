@@ -5,9 +5,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Table(schema = "tbl_employer")
+@Table(schema = "employer")
+@Getter
+@Setter
 public class Employer extends BaseEntity {
   @Column(name = "email",unique = true)
   private String email;
@@ -17,7 +21,7 @@ public class Employer extends BaseEntity {
   private String name;
 
   @Column(name = "province")
-  private String province;
+  private Integer province;
 
   @Lob
   @Column(name = "description", length = 256)
