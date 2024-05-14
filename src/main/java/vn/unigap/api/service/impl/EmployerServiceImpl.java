@@ -48,8 +48,10 @@ public class EmployerServiceImpl implements EmployerService {
   public Employer update(Integer employerId, EmployerUpdateRequestDto employerUpdateRequestDto) {
     Employer employer = employerRepository.findById(employerId)
         .orElseThrow(() -> new ApiException(ErrorCode.EMPLOYER_NOT_FOUND));
+    Integer provinceId = employerUpdateRequestDto.getProvinceId();
+    provinceRepository.findById(provinceId).orElseThrow(() -> new ApiException(ErrorCode.PROVINCE_NOT_FOUND));
     employer.setName(employerUpdateRequestDto.getName());
-    employer.setProvince(employerUpdateRequestDto.getProvinceId());
+    employer.setProvince(provinceId);
     if (employerUpdateRequestDto.getDescription() != null
         && !employerUpdateRequestDto.getDescription().isEmpty()) {
       employer.setDescription(employerUpdateRequestDto.getDescription());
