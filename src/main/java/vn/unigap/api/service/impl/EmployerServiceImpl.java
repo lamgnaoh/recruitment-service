@@ -69,7 +69,7 @@ public class EmployerServiceImpl implements EmployerService {
         .email(employer.getEmail())
         .name(employer.getName())
         .provinceId(employer.getProvince())
-        .name(province.getName())
+        .provinceName(province.getName())
         .build();
   }
 
