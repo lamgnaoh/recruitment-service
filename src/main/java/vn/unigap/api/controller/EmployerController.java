@@ -34,7 +34,7 @@ public class EmployerController {
 
   @GetMapping
   public ResponseEntity<APIResponse<PageResponse<EmployerResponseDto>>> getAll(
-      @RequestParam @Min(value = 0, message = "page must greater than 0") Integer page,
+      @RequestParam @Min(value = 1, message = "page must greater than 0") Integer page,
       @Max(value = 500, message = "pageSize must not greater than 500") @RequestParam Integer pageSize) {
     PageResponse<EmployerResponseDto> response = employerService.getAll(page, pageSize);
     return new ResponseEntity<>(APIResponse.success(response), HttpStatus.OK);

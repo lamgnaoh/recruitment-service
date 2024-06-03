@@ -7,7 +7,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,4 +39,10 @@ public class Employer extends BaseEntity {
   @Lob
   @Column(name = "description", length = 256)
   private String description;
+
+  @OneToMany(mappedBy = "employer")
+  private List<Job> jobs = new ArrayList<>();
+
+  @ManyToMany
+  private List<Province> provinces = new ArrayList<>();
 }

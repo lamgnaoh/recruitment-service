@@ -4,7 +4,6 @@ package vn.unigap.api.dto.out;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
-import vn.unigap.api.enums.ErrorCode;
 
 @Data
 @Builder
@@ -20,6 +19,14 @@ public class APIResponse<T> {
         .object(object)
         .build();
   }
+
+  public static <T> APIResponse <T> success(HttpStatus status,T object){
+    return APIResponse.<T>builder()
+        .statusCode(status.value())
+        .object(object)
+        .build();
+  }
+
 
   public static <T> APIResponse <T> error(String message, HttpStatus status , Integer errorCode){
     return APIResponse.<T>builder()
