@@ -16,55 +16,55 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import vn.unigap.api.dto.in.JobCreateRequestDto;
-import vn.unigap.api.dto.in.JobUpdateRequestDto;
+import vn.unigap.api.dto.in.SeekerRequestDto;
 import vn.unigap.api.dto.out.APIResponse;
-import vn.unigap.api.dto.out.JobResponseDto;
-import vn.unigap.api.service.JobService;
+import vn.unigap.api.dto.out.SeekerResponseDto;
+import vn.unigap.api.service.SeekerService;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping(path = "api/v1/jobs")
-public class JobController {
+@RequestMapping(path = "api/v1/seekers")
+@RequiredArgsConstructor
+public class SeekerController {
 
-
-  private final JobService jobService;
+  private final SeekerService seekerService;
 
   @GetMapping("/{id}")
-  public ResponseEntity<APIResponse<JobResponseDto>> getJob(
-      @PathVariable("id") Integer jobId
+  public ResponseEntity<APIResponse<SeekerResponseDto>> getJob(
+      @PathVariable("id") Integer seekerId
   ){
-    JobResponseDto response = jobService.get(jobId);
+    SeekerResponseDto response = seekerService.get(seekerId);
     return ResponseEntity.ok(APIResponse.success(response));
   }
 
   @GetMapping
-  public ResponseEntity<APIResponse<List<JobResponseDto>>> getJobs(
-       @RequestParam(defaultValue = "-1")  Integer employerId,
+  public ResponseEntity<APIResponse<List<SeekerResponseDto>>> getSeekers(
+      @RequestParam(defaultValue = "-1")  Integer provinceId,
       @RequestParam @Min(value = 1, message = "page must greater than 0") Integer page,
       @Max(value = 500, message = "pageSize must not greater than 500") @RequestParam Integer pageSize) {
-    List<JobResponseDto> jobResponseDtos = jobService.getAll(employerId, page, pageSize);
-    return ResponseEntity.ok(APIResponse.success(jobResponseDtos));
+    List<SeekerResponseDto> seekerResponseDtos = seekerService.getAll(provinceId, page, pageSize);
+    return ResponseEntity.ok(APIResponse.success(seekerResponseDtos));
   }
 
   @PostMapping
-  public ResponseEntity<APIResponse<?>> createJob(
-      @Valid @RequestBody JobCreateRequestDto jobCreateRequestDto) {
-    jobService.create(jobCreateRequestDto);
+  public ResponseEntity<APIResponse<?>> createSekker(
+      @Valid @RequestBody SeekerRequestDto seekerRequestDto) {
+    seekerService.create(seekerRequestDto);
     return new ResponseEntity<>(APIResponse.success(HttpStatus.CREATED,null), HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<APIResponse<?>> updateJob(@PathVariable("id") Integer jobId,
-      @Valid @RequestBody JobUpdateRequestDto jobUpdateRequestDto) {
-    jobService.update(jobId, jobUpdateRequestDto);
+  public ResponseEntity<APIResponse<?>> updateSeeker(@PathVariable("id") Integer seekerId,
+      @Valid @RequestBody SeekerRequestDto seekerRequestDto) {
+    seekerService.update(seekerId, seekerRequestDto);
     return ResponseEntity.ok(APIResponse.success( null));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<APIResponse<?>> delete(@PathVariable("id") Integer jobId) {
-    jobService.delete(jobId);
+  public ResponseEntity<APIResponse<?>> deleteSeeker(@PathVariable("id") Integer seekerId) {
+    seekerService.delete(seekerId);
     return ResponseEntity.ok(APIResponse.success( null));
+
   }
+
 
 }

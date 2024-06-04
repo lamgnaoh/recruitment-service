@@ -9,7 +9,8 @@ public enum ErrorCode {
   PROVINCE_NOT_FOUND(2, HttpStatus.NOT_FOUND, "Province not found" ),
   EMPLOYER_NOT_FOUND(3,HttpStatus.NOT_FOUND ,  "Employer not found"),
   JOB_FIELD_NOT_FOUND(4, HttpStatus.NOT_FOUND, "Job field not found" ),
-  JOB_NOT_FOUND(5,HttpStatus.NOT_FOUND, "Job not found");
+  JOB_NOT_FOUND(5,HttpStatus.NOT_FOUND, "Job not found"),
+  SEEKER_NOT_FOUND(6, HttpStatus.NOT_FOUND,"Seeker not found");
 
   private final Integer code;
   private final HttpStatus status;
