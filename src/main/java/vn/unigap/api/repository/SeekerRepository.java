@@ -7,4 +7,6 @@ import vn.unigap.api.entity.Seeker;
 public interface SeekerRepository extends JpaRepository<Seeker,Integer> {
 
   List<Seeker> findAllByProvinceId(Integer provinceId);
+
+  List<Seeker> findAllBy
 }

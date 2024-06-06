@@ -1,12 +1,12 @@
 package vn.unigap.api.service.impl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vn.unigap.api.AppUtils;
 import vn.unigap.api.dto.in.JobCreateRequestDto;
 import vn.unigap.api.dto.in.JobUpdateRequestDto;
 import vn.unigap.api.dto.out.FieldDto;
@@ -14,8 +14,6 @@ import vn.unigap.api.dto.out.JobResponseDto;
 import vn.unigap.api.dto.out.ProvinceDto;
 import vn.unigap.api.entity.Employer;
 import vn.unigap.api.entity.Job;
-import vn.unigap.api.entity.JobField;
-import vn.unigap.api.entity.Province;
 import vn.unigap.api.enums.ErrorCode;
 import vn.unigap.api.exception.ApiException;
 import vn.unigap.api.repository.EmployerRepository;
@@ -32,6 +30,7 @@ public class JobServiceImpl implements JobService {
   private final EmployerRepository employerRepository;
   private final ProvinceRepository provinceRepository;
   private final JobFieldRepository jobFieldRepository;
+  private final AppUtils appUtils;
 
   @Override
   public void create(JobCreateRequestDto jobCreateRequestDto) {
@@ -91,18 +90,11 @@ public class JobServiceImpl implements JobService {
   public JobResponseDto get(Integer jobId) {
     Job existJob = jobRepository.findById(jobId)
         .orElseThrow(() -> new ApiException(ErrorCode.JOB_NOT_FOUND));
-    List<JobField> jobFields = jobFieldRepository.findByIdIn(Arrays.stream(
-            existJob.getFields().substring(1, existJob.getFields().length() - 1).split("-"))
-        .map(Integer::valueOf).toList());
-    List<FieldDto> fieldDtos = jobFields.stream()
-        .map(el -> FieldDto.builder().id(el.getId()).name(el.getField()).build()).toList();
+    List<FieldDto> fieldDtos = appUtils.getFieldDtoFromIds(
+        existJob.getFields().substring(1, existJob.getFields().length() - 1).split("-"));
 
-    List<Province> provinces = provinceRepository.findByIdIn(
-        Arrays.stream(existJob.getProvinces()
-                .substring(1, existJob.getProvinces().length() - 1).split("-"))
-        .map(Integer::valueOf).toList());
-    List<ProvinceDto> provinceDtos = provinces.stream()
-        .map(el -> ProvinceDto.builder().id(el.getId()).name(el.getName()).build()).toList();
+    List<ProvinceDto> provinceDtos = appUtils.getProvinceDtoFromIds(
+        existJob.getProvinces().substring(1, existJob.getFields().length() - 1).split("-"));
 
     return JobResponseDto.builder()
         .id(existJob.getId()).title(existJob.getTitle())
