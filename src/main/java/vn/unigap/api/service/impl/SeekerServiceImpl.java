@@ -2,10 +2,12 @@ package vn.unigap.api.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.unigap.api.dto.in.SeekerRequestDto;
+import vn.unigap.api.dto.out.PageResponse;
 import vn.unigap.api.dto.out.SeekerResponseDto;
 import vn.unigap.api.entity.Province;
 import vn.unigap.api.entity.Seeker;
@@ -67,19 +69,23 @@ public class SeekerServiceImpl implements SeekerService {
   }
 
   @Override
-  public List<SeekerResponseDto> getAll(Integer provinceId, Integer page, Integer pageSize) {
+  public PageResponse<SeekerResponseDto> getAll(Integer provinceId, Integer page,
+      Integer pageSize) {
     Pageable paging = PageRequest.of(page - 1, pageSize);
-    List<Seeker> seekers;
+    Page<Seeker> seekers;
     if (provinceId == -1) {
-      seekers = seekerRepository.findAll(paging).get().toList();
+      seekers = seekerRepository.findAll(paging);
     } else {
-      seekers = seekerRepository.findAllByProvinceId(provinceId);
+      seekers = seekerRepository.findAllByProvinceId(provinceId, paging);
     }
-    return seekers.stream().map(
+    List<SeekerResponseDto> seekerResponseDtos = seekers.getContent().stream().map(
         seeker -> SeekerResponseDto.builder().id(seeker.getId()).name(seeker.getName())
             .birthday(seeker.getBirthday()).address(seeker.getAddress())
             .provinceId(seeker.getProvince().getId()).provinceName(seeker.getProvince().getName())
             .build()).toList();
+    return PageResponse.<SeekerResponseDto>builder().page(page).pageSize(pageSize)
+        .totalElements(seekers.getTotalElements()).totalPages((long) seekers.getTotalPages())
+        .data(seekerResponseDtos).build();
 
 
   }

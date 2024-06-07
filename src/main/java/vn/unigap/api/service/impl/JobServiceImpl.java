@@ -3,6 +3,7 @@ package vn.unigap.api.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import vn.unigap.api.dto.in.JobCreateRequestDto;
 import vn.unigap.api.dto.in.JobUpdateRequestDto;
 import vn.unigap.api.dto.out.FieldDto;
 import vn.unigap.api.dto.out.JobResponseDto;
+import vn.unigap.api.dto.out.PageResponse;
 import vn.unigap.api.dto.out.ProvinceDto;
 import vn.unigap.api.entity.Employer;
 import vn.unigap.api.entity.Job;
@@ -94,39 +96,34 @@ public class JobServiceImpl implements JobService {
         existJob.getFields().substring(1, existJob.getFields().length() - 1).split("-"));
 
     List<ProvinceDto> provinceDtos = appUtils.getProvinceDtoFromIds(
-        existJob.getProvinces().substring(1, existJob.getFields().length() - 1).split("-"));
+        existJob.getProvinces().substring(1, existJob.getProvinces().length() - 1).split("-"));
 
-    return JobResponseDto.builder()
-        .id(existJob.getId()).title(existJob.getTitle())
-        .quantity(existJob.getQuantity())
-        .description(existJob.getDescription())
-        .fields(fieldDtos)
-        .provinces(provinceDtos)
-        .salary(existJob.getSalary())
-        .expiredAt(existJob.getExpiredAt())
-        .employerId(existJob.getEmployer().getId())
-        .employerName(existJob.getEmployer().getName()).build();
+    return JobResponseDto.builder().id(existJob.getId()).title(existJob.getTitle())
+        .quantity(existJob.getQuantity()).description(existJob.getDescription()).fields(fieldDtos)
+        .provinces(provinceDtos).salary(existJob.getSalary()).expiredAt(existJob.getExpiredAt())
+        .employerId(existJob.getEmployer() != null ? existJob.getEmployer().getId() : null)
+        .employerName(existJob.getEmployer() != null ? existJob.getEmployer().getName() : null)
+        .build();
   }
 
   @Override
-  public List<JobResponseDto> getAll(Integer employerId, Integer page, Integer pageSize) {
+  public PageResponse<JobResponseDto> getAll(Integer employerId, Integer page, Integer pageSize) {
     Pageable paging = PageRequest.of(page - 1, pageSize);
-    List<Job> jobs;
+    Page<Job> jobs;
     if (employerId == -1) {
-      jobs = jobRepository.findAll(paging).get().toList();
+      jobs = jobRepository.findAll(paging);
     } else {
-      jobs = jobRepository.findAllByEmployerId(employerId, paging).get().toList();
+      jobs = jobRepository.findAllByEmployerId(employerId, paging);
     }
-    return jobs.stream().map(job -> JobResponseDto.builder()
-            .id(job.getId())
-            .title(job.getTitle())
-            .quantity(job.getQuantity())
-            .salary(job.getSalary())
-            .expiredAt(job.getExpiredAt())
-            .employerId(job.getEmployer().getId())
-            .employerName(job.getEmployer().getName())
-            .build())
+    List<JobResponseDto> jobResponseDtos = jobs.getContent().stream().map(
+            job -> JobResponseDto.builder().id(job.getId()).title(job.getTitle())
+                .quantity(job.getQuantity()).salary(job.getSalary()).expiredAt(job.getExpiredAt())
+                .employerId(job.getEmployer() != null ? job.getEmployer().getId() : null)
+                .employerName(job.getEmployer() != null ? job.getEmployer().getName() : null).build())
         .toList();
+    return PageResponse.<JobResponseDto>builder().page(page).pageSize(pageSize)
+        .totalElements(jobs.getTotalElements()).totalPages((long) jobs.getTotalPages())
+        .data(jobResponseDtos).build();
   }
 
   @Override

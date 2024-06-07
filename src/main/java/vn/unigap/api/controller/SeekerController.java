@@ -3,7 +3,6 @@ package vn.unigap.api.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vn.unigap.api.dto.in.SeekerRequestDto;
 import vn.unigap.api.dto.out.APIResponse;
+import vn.unigap.api.dto.out.PageResponse;
 import vn.unigap.api.dto.out.SeekerResponseDto;
 import vn.unigap.api.service.SeekerService;
 
@@ -37,11 +37,11 @@ public class SeekerController {
   }
 
   @GetMapping
-  public ResponseEntity<APIResponse<List<SeekerResponseDto>>> getSeekers(
+  public ResponseEntity<APIResponse<PageResponse<SeekerResponseDto>>> getSeekers(
       @RequestParam(defaultValue = "-1")  Integer provinceId,
       @RequestParam @Min(value = 1, message = "page must greater than 0") Integer page,
       @Max(value = 500, message = "pageSize must not greater than 500") @RequestParam Integer pageSize) {
-    List<SeekerResponseDto> seekerResponseDtos = seekerService.getAll(provinceId, page, pageSize);
+    PageResponse<SeekerResponseDto> seekerResponseDtos = seekerService.getAll(provinceId, page, pageSize);
     return ResponseEntity.ok(APIResponse.success(seekerResponseDtos));
   }
 

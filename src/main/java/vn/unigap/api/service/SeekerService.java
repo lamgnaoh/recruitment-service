@@ -1,7 +1,7 @@
 package vn.unigap.api.service;
 
-import java.util.List;
 import vn.unigap.api.dto.in.SeekerRequestDto;
+import vn.unigap.api.dto.out.PageResponse;
 import vn.unigap.api.dto.out.SeekerResponseDto;
 
 public interface SeekerService {
@@ -11,7 +11,7 @@ public interface SeekerService {
 
   SeekerResponseDto get(Integer seekerId);
 
-  List<SeekerResponseDto> getAll(Integer provinceId, Integer page, Integer pageSize);
+  PageResponse<SeekerResponseDto> getAll(Integer provinceId, Integer page, Integer pageSize);
 
   void delete(Integer seekerId);
 }

@@ -1,8 +1,8 @@
 package vn.unigap.api.service;
 
-import java.util.List;
 import vn.unigap.api.dto.in.ResumeCreateRequestDto;
 import vn.unigap.api.dto.in.ResumeUpdateRequestDto;
+import vn.unigap.api.dto.out.PageResponse;
 import vn.unigap.api.dto.out.ResumeResponseDto;
 
 public interface ResumeService {
@@ -13,7 +13,7 @@ public interface ResumeService {
 
   ResumeResponseDto get(Integer resumeId);
 
-  List<ResumeResponseDto> getAll(Integer seekerId, Integer page, Integer pageSize);
+  PageResponse<ResumeResponseDto> getAll(Integer seekerId, Integer page, Integer pageSize);
 
   void delete(Integer resumeId);
 }

@@ -1,5 +1,6 @@
 package vn.unigap.api.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(schema = "job_field")
+@Table(name = "job_field")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,6 +24,8 @@ public class JobField {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-  private String field;
+  @Column
+  private String name;
+  @Column
   private String slug;
 }

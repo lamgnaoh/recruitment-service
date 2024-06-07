@@ -22,7 +22,7 @@ public class AppUtils {
     List<JobField> jobFields = jobFieldRepository.findByIdIn(
         Arrays.stream(fieldIds).map(Integer::valueOf).toList());
     return jobFields.stream()
-        .map(el -> FieldDto.builder().id(el.getId()).name(el.getField()).build()).toList();
+        .map(el -> FieldDto.builder().id(el.getId()).name(el.getName()).build()).toList();
   }
 
   public List<ProvinceDto> getProvinceDtoFromIds(String[] provinceIds){

@@ -3,6 +3,7 @@ package vn.unigap.api.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import vn.unigap.api.AppUtils;
 import vn.unigap.api.dto.in.ResumeCreateRequestDto;
 import vn.unigap.api.dto.in.ResumeUpdateRequestDto;
 import vn.unigap.api.dto.out.FieldDto;
+import vn.unigap.api.dto.out.PageResponse;
 import vn.unigap.api.dto.out.ProvinceDto;
 import vn.unigap.api.dto.out.ResumeResponseDto;
 import vn.unigap.api.entity.Resume;
@@ -102,22 +104,22 @@ public class ResumeServiceImpl implements ResumeService {
   }
 
   @Override
-  public List<ResumeResponseDto> getAll(Integer seekerId, Integer page, Integer pageSize) {
+  public PageResponse<ResumeResponseDto> getAll(Integer seekerId, Integer page, Integer pageSize) {
     Pageable pageable = PageRequest.of(page - 1, pageSize);
-    List<Resume> resumes;
+    Page<Resume> resumes;
     if (seekerId == -1) {
-      resumes = resumeRepository.findAll(pageable).get().toList();
+      resumes = resumeRepository.findAll(pageable);
     } else {
-      resumes = resumeRepository.findAllBySeekerId(seekerId, pageable).get().toList();
+      resumes = resumeRepository.findAllBySeekerId(seekerId, pageable);
     }
-    return resumes.stream().map(resume -> ResumeResponseDto.builder()
-        .id(resume.getId())
-        .seekerId(resume.getSeeker().getId())
-        .seekerName(resume.getSeeker().getName())
-        .careerObj(resume.getCareerObj())
-        .title(resume.getTitle())
-        .salary(resume.getSalary())
-        .build()).toList();
+    List<ResumeResponseDto> responseDtos = resumes.getContent().stream().map(
+        resume -> ResumeResponseDto.builder().id(resume.getId())
+            .seekerId(resume.getSeeker().getId()).seekerName(resume.getSeeker().getName())
+            .careerObj(resume.getCareerObj()).title(resume.getTitle()).salary(resume.getSalary())
+            .build()).toList();
+    return PageResponse.<ResumeResponseDto>builder().page(page).pageSize(pageSize)
+        .totalElements(resumes.getTotalElements()).totalPages((long) resumes.getTotalPages())
+        .data(responseDtos).build();
   }
 
   @Override

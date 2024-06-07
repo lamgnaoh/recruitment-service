@@ -3,7 +3,6 @@ package vn.unigap.api.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.unigap.api.dto.in.ResumeCreateRequestDto;
 import vn.unigap.api.dto.in.ResumeUpdateRequestDto;
 import vn.unigap.api.dto.out.APIResponse;
+import vn.unigap.api.dto.out.PageResponse;
 import vn.unigap.api.dto.out.ResumeResponseDto;
 import vn.unigap.api.service.ResumeService;
 
@@ -50,13 +50,13 @@ public class ResumeController {
   }
 
   @GetMapping
-  public ResponseEntity<APIResponse<List<ResumeResponseDto>>> getAll(
+  public ResponseEntity<APIResponse<PageResponse<ResumeResponseDto>>> getAll(
       @RequestParam("seekerId") Integer seekerId,
       @RequestParam @Min(value = 1, message = "page must greater than 0") Integer page,
       @Max(value = 500, message = "pageSize must not greater than 500") @RequestParam Integer pageSize
 
   ){
-    List<ResumeResponseDto> responseDtos = resumeService.getAll(seekerId, page, pageSize);
+    PageResponse<ResumeResponseDto> responseDtos = resumeService.getAll(seekerId, page, pageSize);
     return ResponseEntity.ok(APIResponse.success(responseDtos));
   }
 

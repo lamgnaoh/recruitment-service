@@ -3,7 +3,6 @@ package vn.unigap.api.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,7 @@ import vn.unigap.api.dto.in.JobCreateRequestDto;
 import vn.unigap.api.dto.in.JobUpdateRequestDto;
 import vn.unigap.api.dto.out.APIResponse;
 import vn.unigap.api.dto.out.JobResponseDto;
+import vn.unigap.api.dto.out.PageResponse;
 import vn.unigap.api.service.JobService;
 
 @RequiredArgsConstructor
@@ -39,11 +39,11 @@ public class JobController {
   }
 
   @GetMapping
-  public ResponseEntity<APIResponse<List<JobResponseDto>>> getJobs(
+  public ResponseEntity<APIResponse<PageResponse<JobResponseDto>>> getJobs(
        @RequestParam(defaultValue = "-1")  Integer employerId,
       @RequestParam @Min(value = 1, message = "page must greater than 0") Integer page,
       @Max(value = 500, message = "pageSize must not greater than 500") @RequestParam Integer pageSize) {
-    List<JobResponseDto> jobResponseDtos = jobService.getAll(employerId, page, pageSize);
+    PageResponse<JobResponseDto> jobResponseDtos = jobService.getAll(employerId, page, pageSize);
     return ResponseEntity.ok(APIResponse.success(jobResponseDtos));
   }
 
