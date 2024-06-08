@@ -91,14 +91,25 @@ public class ResumeServiceImpl implements ResumeService {
   public ResumeResponseDto get(Integer resumeId) {
     Resume savedResume = resumeRepository.findById(resumeId)
         .orElseThrow(() -> new ApiException(ErrorCode.RESUME_NOT_FOUND));
-    List<FieldDto> fieldDtos = appUtils.getFieldDtoFromIds(
-        savedResume.getFields().substring(1, savedResume.getFields().length() - 1).split("-"));
+    List<FieldDto> fieldDtos;
+    if (!savedResume.getFields().equals("0")){
+      fieldDtos = appUtils.getFieldDtoFromIds(
+          savedResume.getFields().substring(1, savedResume.getFields().length() - 1).split("-"));
+    } else {
+      fieldDtos = null;
+    }
 
-    List<ProvinceDto> provinceDtos = appUtils.getProvinceDtoFromIds(
-        savedResume.getProvinces().substring(1, savedResume.getFields().length() - 1).split("-"));
+    List<ProvinceDto> provinceDtos;
+    if (!savedResume.getProvinces().equals("0")){
+      provinceDtos = appUtils.getProvinceDtoFromIds(
+          savedResume.getProvinces().substring(1, savedResume.getFields().length() - 1).split("-"));
+    }else{
+      provinceDtos = null;
+    }
 
     return ResumeResponseDto.builder().id(savedResume.getId())
-        .seekerId(savedResume.getSeeker().getId()).seekerName(savedResume.getSeeker().getName())
+        .seekerId(savedResume.getSeeker() != null ? savedResume.getSeeker().getId() : null)
+        .seekerName(savedResume.getSeeker() != null ? savedResume.getSeeker().getName() : null)
         .careerObj(savedResume.getCareerObj()).title(savedResume.getTitle())
         .salary(savedResume.getSalary()).fields(fieldDtos).provinces(provinceDtos).build();
   }
@@ -114,7 +125,8 @@ public class ResumeServiceImpl implements ResumeService {
     }
     List<ResumeResponseDto> responseDtos = resumes.getContent().stream().map(
         resume -> ResumeResponseDto.builder().id(resume.getId())
-            .seekerId(resume.getSeeker().getId()).seekerName(resume.getSeeker().getName())
+            .seekerId(resume.getSeeker() != null ? resume.getSeeker().getId() : null)
+            .seekerName(resume.getSeeker() != null ? resume.getSeeker().getName() : null)
             .careerObj(resume.getCareerObj()).title(resume.getTitle()).salary(resume.getSalary())
             .build()).toList();
     return PageResponse.<ResumeResponseDto>builder().page(page).pageSize(pageSize)

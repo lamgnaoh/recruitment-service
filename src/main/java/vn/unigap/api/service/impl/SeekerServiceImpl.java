@@ -61,11 +61,17 @@ public class SeekerServiceImpl implements SeekerService {
   public SeekerResponseDto get(Integer seekerId) {
     Seeker seeker = seekerRepository.findById(seekerId)
         .orElseThrow(() -> new ApiException(ErrorCode.SEEKER_NOT_FOUND));
-    Province province = provinceRepository.findById(seeker.getProvince().getId())
-        .orElseThrow(() -> new ApiException(ErrorCode.PROVINCE_NOT_FOUND));
+    Province province;
+    if (seeker.getProvince() != null){
+      province = provinceRepository.findById(seeker.getProvince().getId())
+          .orElseThrow(() -> new ApiException(ErrorCode.PROVINCE_NOT_FOUND));
+    } else {
+      province = null;
+    }
     return SeekerResponseDto.builder().id(seeker.getId()).name(seeker.getName())
         .birthday(seeker.getBirthday()).address(seeker.getAddress())
-        .provinceId(seeker.getProvince().getId()).provinceName(province.getName()).build();
+        .provinceId(seeker.getProvince() != null ? seeker.getProvince().getId() : null)
+        .provinceName(province != null ? province.getName() : null).build();
   }
 
   @Override
@@ -81,7 +87,8 @@ public class SeekerServiceImpl implements SeekerService {
     List<SeekerResponseDto> seekerResponseDtos = seekers.getContent().stream().map(
         seeker -> SeekerResponseDto.builder().id(seeker.getId()).name(seeker.getName())
             .birthday(seeker.getBirthday()).address(seeker.getAddress())
-            .provinceId(seeker.getProvince().getId()).provinceName(seeker.getProvince().getName())
+            .provinceId(seeker.getProvince() != null ? seeker.getProvince().getId() : null)
+            .provinceName(seeker.getProvince() != null ? seeker.getProvince().getName() : null)
             .build()).toList();
     return PageResponse.<SeekerResponseDto>builder().page(page).pageSize(pageSize)
         .totalElements(seekers.getTotalElements()).totalPages((long) seekers.getTotalPages())

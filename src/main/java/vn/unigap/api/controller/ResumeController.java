@@ -51,7 +51,7 @@ public class ResumeController {
 
   @GetMapping
   public ResponseEntity<APIResponse<PageResponse<ResumeResponseDto>>> getAll(
-      @RequestParam("seekerId") Integer seekerId,
+      @RequestParam(value = "seekerId" , defaultValue = "-1") Integer seekerId,
       @RequestParam @Min(value = 1, message = "page must greater than 0") Integer page,
       @Max(value = 500, message = "pageSize must not greater than 500") @RequestParam Integer pageSize
 
