@@ -50,14 +50,14 @@ public class EmployerController {
 
   @PostMapping
   public ResponseEntity<APIResponse<?>> createEmployer(
-      @Valid @RequestBody EmployerCreateRequestDto employerCreateRequestDto, BindingResult result) {
-    if (result.hasErrors()) {
-      String errorMessage = result.getFieldErrors().stream()
-          .map(error -> String.format("%s: %s", error.getField(), error.getDefaultMessage()))
-          .collect(Collectors.joining(", "));
-      return new ResponseEntity<>(APIResponse.error(errorMessage, HttpStatus.BAD_REQUEST, 400),
-          HttpStatus.BAD_REQUEST);
-    }
+      @Valid @RequestBody EmployerCreateRequestDto employerCreateRequestDto) {
+//    if (result.hasErrors()) {
+//      String errorMessage = result.getFieldErrors().stream()
+//          .map(error -> String.format("%s: %s", error.getField(), error.getDefaultMessage()))
+//          .collect(Collectors.joining(", "));
+//      return new ResponseEntity<>(APIResponse.error(errorMessage, HttpStatus.BAD_REQUEST, 400),
+//          HttpStatus.BAD_REQUEST);
+//    }
 
     employerService.createEmployer(employerCreateRequestDto);
     return new ResponseEntity<>(APIResponse.builder().statusCode(201).build(), HttpStatus.CREATED);
