@@ -16,4 +16,6 @@ public interface JobService {
   PageResponse<JobResponseDto> getAll(Integer employerId, Integer page, Integer pageSize);
 
   void delete(Integer jobId);
+
+  JobResponseDto getJobDetailAndSeekerRelated(Integer jobId);
 }

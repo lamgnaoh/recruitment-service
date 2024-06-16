@@ -67,4 +67,12 @@ public class JobController {
     return ResponseEntity.ok(APIResponse.success( null));
   }
 
+  @GetMapping("/{id}/seekers")
+  public ResponseEntity<APIResponse<JobResponseDto>> getJobDetailAndSeekerRelated(
+      @PathVariable("id") Integer jobId
+  ){
+    JobResponseDto response = jobService.getJobDetailAndSeekerRelated(jobId);
+    return ResponseEntity.ok(APIResponse.success(response));
+  }
+
 }

@@ -22,4 +22,5 @@ public class JobResponseDto {
   private LocalDateTime expiredAt;
   private Integer employerId;
   private String employerName;
+  private List<SeekerResponseDto> seekers;
 }

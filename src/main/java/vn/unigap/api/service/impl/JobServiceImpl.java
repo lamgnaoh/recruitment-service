@@ -1,5 +1,9 @@
 package vn.unigap.api.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -14,14 +18,17 @@ import vn.unigap.api.dto.out.FieldDto;
 import vn.unigap.api.dto.out.JobResponseDto;
 import vn.unigap.api.dto.out.PageResponse;
 import vn.unigap.api.dto.out.ProvinceDto;
+import vn.unigap.api.dto.out.SeekerResponseDto;
 import vn.unigap.api.entity.Employer;
 import vn.unigap.api.entity.Job;
+import vn.unigap.api.entity.Seeker;
 import vn.unigap.api.enums.ErrorCode;
 import vn.unigap.api.exception.ApiException;
 import vn.unigap.api.repository.EmployerRepository;
 import vn.unigap.api.repository.JobFieldRepository;
 import vn.unigap.api.repository.JobReposiroty;
 import vn.unigap.api.repository.ProvinceRepository;
+import vn.unigap.api.repository.SeekerRepository;
 import vn.unigap.api.service.JobService;
 
 @Service
@@ -32,6 +39,8 @@ public class JobServiceImpl implements JobService {
   private final EmployerRepository employerRepository;
   private final ProvinceRepository provinceRepository;
   private final JobFieldRepository jobFieldRepository;
+  private final SeekerRepository seekerRepository;
+  private final EntityManager entityManager;
   private final AppUtils appUtils;
 
   @Override
@@ -131,5 +140,64 @@ public class JobServiceImpl implements JobService {
     Job existJob = jobRepository.findById(jobId)
         .orElseThrow(() -> new ApiException(ErrorCode.JOB_NOT_FOUND));
     jobRepository.delete(existJob);
+  }
+
+  @Override
+  public JobResponseDto getJobDetailAndSeekerRelated(Integer jobId) {
+    Job existJob = jobRepository.findById(jobId)
+        .orElseThrow(() -> new ApiException(ErrorCode.JOB_NOT_FOUND));
+    List<FieldDto> fieldDtos = appUtils.getFieldDtoFromIds(
+        existJob.getFields().substring(1, existJob.getFields().length() - 1).split("-"));
+
+    List<ProvinceDto> provinceDtos = appUtils.getProvinceDtoFromIds(
+        existJob.getProvinces().substring(1, existJob.getProvinces().length() - 1).split("-"));
+
+    List<Integer> fieldIds = Arrays.stream(
+        existJob.getFields().substring(1, existJob.getFields().length() - 1).split("-")).map(Integer::parseInt).toList();
+    List<Integer> provinceIds = Arrays.stream(
+        existJob.getProvinces().substring(1, existJob.getProvinces().length() - 1).split("-")).map(Integer::parseInt).toList();
+    List<Seeker> seekers = findByJobSalaryAndProvincesAndFields(existJob.getSalary(), provinceIds, fieldIds);
+
+    return JobResponseDto.builder().id(existJob.getId()).title(existJob.getTitle())
+        .quantity(existJob.getQuantity()).description(existJob.getDescription()).fields(fieldDtos)
+        .provinces(provinceDtos).salary(existJob.getSalary()).expiredAt(existJob.getExpiredAt())
+        .employerId(existJob.getEmployer() != null ? existJob.getEmployer().getId() : null)
+        .employerName(existJob.getEmployer() != null ? existJob.getEmployer().getName() : null)
+        .seekers(seekers.stream().map(seeker -> SeekerResponseDto.builder().id(seeker.getId())
+            .name(seeker.getName()).build()).toList())
+        .build();
+  }
+
+  public List<Seeker> findByJobSalaryAndProvincesAndFields(BigDecimal salary, List<Integer> provinceIds,
+      List<Integer> fieldIds) {
+    String baseQuery = "select s.* from seeker s "
+        + "inner join resume r on s.id = r.seeker_id "
+        + "where r.salary <= :salary ";
+
+    StringBuilder fieldQuery = new StringBuilder();
+    for (int i = 0; i < fieldIds.size(); i++) {
+      fieldQuery.append("r.fields like :field").append(i);
+      if (i < fieldIds.size() - 1) {
+        fieldQuery.append(" or ");
+      }
+    }
+    fieldQuery.append(") and (");
+    for (int i = 0; i < provinceIds.size(); i++) {
+      fieldQuery.append("r.provinces like :province").append(i);
+      if (i < provinceIds.size() - 1) {
+        fieldQuery.append(" or ");
+      }
+    }
+
+    Query query = entityManager.createNativeQuery(baseQuery + " and (" + fieldQuery.toString() + ")", Seeker.class);
+    query.setParameter("salary", salary);
+    for (int i = 0; i < fieldIds.size(); i++) {
+      query.setParameter("field" + i, "%-" + fieldIds.get(i) + "-%");
+    }
+    for (int i = 0; i < provinceIds.size(); i++) {
+      query.setParameter("province" + i, "%-" + provinceIds.get(i) + "-%");
+    }
+
+    return query.getResultList();
   }
 }
