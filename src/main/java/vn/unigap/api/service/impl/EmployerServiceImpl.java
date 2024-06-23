@@ -3,6 +3,8 @@ package vn.unigap.api.service.impl;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +47,7 @@ public class EmployerServiceImpl implements EmployerService {
   }
 
   @Override
+  @CachePut(value = "employer" , key = "#employerId")
   public Employer update(Integer employerId, EmployerUpdateRequestDto employerUpdateRequestDto) {
     Employer employer = employerRepository.findById(employerId)
         .orElseThrow(() -> new ApiException(ErrorCode.EMPLOYER_NOT_FOUND));
@@ -60,6 +63,7 @@ public class EmployerServiceImpl implements EmployerService {
   }
 
   @Override
+  @Cacheable("employer")
   public EmployerResponseDto get(Integer employerId) {
     Employer employer = employerRepository.findById(employerId)
         .orElseThrow(() -> new ApiException(ErrorCode.EMPLOYER_NOT_FOUND));
@@ -93,6 +97,7 @@ public class EmployerServiceImpl implements EmployerService {
   }
 
   @Override
+  @CachePut(value = "employer" , key = "#employerId")
   public Employer delete(Integer employerId) {
     Employer employer = employerRepository.findById(employerId)
         .orElseThrow(() -> new ApiException(ErrorCode.EMPLOYER_NOT_FOUND));

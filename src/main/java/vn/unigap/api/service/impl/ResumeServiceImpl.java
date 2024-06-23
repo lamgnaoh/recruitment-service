@@ -3,6 +3,9 @@ package vn.unigap.api.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -56,6 +59,7 @@ public class ResumeServiceImpl implements ResumeService {
   }
 
   @Override
+  @CachePut(value = "resume", key = "#resumeId")
   public void update(Integer resumeId, ResumeUpdateRequestDto resumeUpdateRequestDto) {
     Resume savedResume = resumeRepository.findById(resumeId)
         .orElseThrow(() -> new ApiException(ErrorCode.RESUME_NOT_FOUND));
@@ -88,6 +92,7 @@ public class ResumeServiceImpl implements ResumeService {
   }
 
   @Override
+  @Cacheable("resume")
   public ResumeResponseDto get(Integer resumeId) {
     Resume savedResume = resumeRepository.findById(resumeId)
         .orElseThrow(() -> new ApiException(ErrorCode.RESUME_NOT_FOUND));
@@ -135,6 +140,7 @@ public class ResumeServiceImpl implements ResumeService {
   }
 
   @Override
+  @CacheEvict(value = "resume", key = "#resumeId")
   public void delete(Integer resumeId) {
     Resume savedResume = resumeRepository.findById(resumeId)
         .orElseThrow(() -> new ApiException(ErrorCode.RESUME_NOT_FOUND));

@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -66,6 +68,7 @@ public class JobServiceImpl implements JobService {
   }
 
   @Override
+  @CacheEvict(value = "job", key = "#jobId")
   public void update(Integer jobId, JobUpdateRequestDto jobUpdateRequestDto) {
     Job existJob = jobRepository.findById(jobId)
         .orElseThrow(() -> new ApiException(ErrorCode.JOB_NOT_FOUND));
@@ -98,6 +101,7 @@ public class JobServiceImpl implements JobService {
   }
 
   @Override
+  @Cacheable(value = "job")
   public JobResponseDto get(Integer jobId) {
     Job existJob = jobRepository.findById(jobId)
         .orElseThrow(() -> new ApiException(ErrorCode.JOB_NOT_FOUND));
@@ -136,6 +140,7 @@ public class JobServiceImpl implements JobService {
   }
 
   @Override
+  @CacheEvict(value = "job", key = "#jobId")
   public void delete(Integer jobId) {
     Job existJob = jobRepository.findById(jobId)
         .orElseThrow(() -> new ApiException(ErrorCode.JOB_NOT_FOUND));
