@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -23,7 +25,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Job extends BaseEntity {
+public class Job extends BaseEntity implements Serializable {
+
+  @Serial
+  private static final long serialVersionUID = 1L;
+
   @Id
   @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)

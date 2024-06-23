@@ -2,9 +2,6 @@ package vn.unigap.api.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +35,6 @@ public class SeekerServiceImpl implements SeekerService {
   }
 
   @Override
-  @CachePut(value = "seeker" , key = "#seekerId")
   public void update(Integer seekerId, SeekerRequestDto seekerRequestDto) {
     Seeker savedSeeker = seekerRepository.findById(seekerId)
         .orElseThrow(() -> new ApiException(ErrorCode.SEEKER_NOT_FOUND));
@@ -62,7 +58,6 @@ public class SeekerServiceImpl implements SeekerService {
   }
 
   @Override
-  @Cacheable("seeker")
   public SeekerResponseDto get(Integer seekerId) {
     Seeker seeker = seekerRepository.findById(seekerId)
         .orElseThrow(() -> new ApiException(ErrorCode.SEEKER_NOT_FOUND));
@@ -103,7 +98,6 @@ public class SeekerServiceImpl implements SeekerService {
   }
 
   @Override
-  @CacheEvict(value = "seeker", key = "#seekerId")
   public void delete(Integer seekerId) {
     Seeker savedSeeker = seekerRepository.findById(seekerId)
         .orElseThrow(() -> new ApiException(ErrorCode.SEEKER_NOT_FOUND));

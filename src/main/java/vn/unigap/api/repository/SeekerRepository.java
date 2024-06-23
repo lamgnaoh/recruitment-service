@@ -1,6 +1,11 @@
 package vn.unigap.api.repository;
 
+import jakarta.annotation.Nonnull;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +28,15 @@ public interface SeekerRepository extends JpaRepository<Seeker,Integer> {
 //      @Param("salary") BigDecimal salary,
 //      @Param("provinces") List<Integer> provinceIds,
 //      @Param("fields") List<Integer> fieldIds);
+
+  @Nonnull
+  @Cacheable("seeker")
+  Optional<Seeker> findById(@Nonnull Integer id);
+  @CacheEvict(value = "seeker", key = "#seeker.id")
+  void delete(@Nonnull Seeker seeker);
+
+  @Nonnull
+  @CachePut(value = "seeker" , key = "#seeker.id")
+  Seeker save(@Nonnull Seeker seeker);
+
 }

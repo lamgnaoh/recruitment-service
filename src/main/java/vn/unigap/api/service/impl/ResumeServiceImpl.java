@@ -3,9 +3,6 @@ package vn.unigap.api.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,11 +40,11 @@ public class ResumeServiceImpl implements ResumeService {
         .orElseThrow(() -> new ApiException(ErrorCode.SEEKER_NOT_FOUND));
 
     List<Integer> provinceIds = resumeCreateRequestDto.getProvinceIds();
-    provinceIds.stream().map(id -> provinceRepository.findById(id)
-        .orElseThrow(() -> new ApiException(ErrorCode.PROVINCE_NOT_FOUND))).toList();
+    provinceIds.forEach(id -> provinceRepository.findById(id)
+        .orElseThrow(() -> new ApiException(ErrorCode.PROVINCE_NOT_FOUND)));
     List<Integer> fieldIds = resumeCreateRequestDto.getFieldIds();
-    fieldIds.stream().map(id -> jobFieldRepository.findById(id)
-        .orElseThrow(() -> new ApiException(ErrorCode.JOB_FIELD_NOT_FOUND))).toList();
+    fieldIds.forEach(id -> jobFieldRepository.findById(id)
+        .orElseThrow(() -> new ApiException(ErrorCode.JOB_FIELD_NOT_FOUND)));
 
     Resume resume = Resume.builder().seeker(seeker).careerObj(resumeCreateRequestDto.getCareerObj())
         .title(resumeCreateRequestDto.getTitle()).salary(resumeCreateRequestDto.getSalary())
@@ -59,16 +56,15 @@ public class ResumeServiceImpl implements ResumeService {
   }
 
   @Override
-  @CachePut(value = "resume", key = "#resumeId")
   public void update(Integer resumeId, ResumeUpdateRequestDto resumeUpdateRequestDto) {
     Resume savedResume = resumeRepository.findById(resumeId)
         .orElseThrow(() -> new ApiException(ErrorCode.RESUME_NOT_FOUND));
     List<Integer> provinceIds = resumeUpdateRequestDto.getProvinceIds();
-    provinceIds.stream().map(id -> provinceRepository.findById(id)
-        .orElseThrow(() -> new ApiException(ErrorCode.PROVINCE_NOT_FOUND))).toList();
+    provinceIds.forEach(id -> provinceRepository.findById(id)
+        .orElseThrow(() -> new ApiException(ErrorCode.PROVINCE_NOT_FOUND)));
     List<Integer> fieldIds = resumeUpdateRequestDto.getFieldIds();
-    fieldIds.stream().map(id -> jobFieldRepository.findById(id)
-        .orElseThrow(() -> new ApiException(ErrorCode.JOB_FIELD_NOT_FOUND))).toList();
+    fieldIds.forEach(id -> jobFieldRepository.findById(id)
+        .orElseThrow(() -> new ApiException(ErrorCode.JOB_FIELD_NOT_FOUND)));
     if (resumeUpdateRequestDto.getCareerObj() != null) {
       savedResume.setCareerObj(resumeUpdateRequestDto.getCareerObj());
     }
@@ -92,7 +88,6 @@ public class ResumeServiceImpl implements ResumeService {
   }
 
   @Override
-  @Cacheable("resume")
   public ResumeResponseDto get(Integer resumeId) {
     Resume savedResume = resumeRepository.findById(resumeId)
         .orElseThrow(() -> new ApiException(ErrorCode.RESUME_NOT_FOUND));
@@ -140,7 +135,6 @@ public class ResumeServiceImpl implements ResumeService {
   }
 
   @Override
-  @CacheEvict(value = "resume", key = "#resumeId")
   public void delete(Integer resumeId) {
     Resume savedResume = resumeRepository.findById(resumeId)
         .orElseThrow(() -> new ApiException(ErrorCode.RESUME_NOT_FOUND));
