@@ -34,7 +34,7 @@ public class EmployerController {
 
   @GetMapping
   public ResponseEntity<APIResponse<PageResponse<EmployerResponseDto>>> getAll(
-      @RequestParam @Min(value = 0, message = "page must greater than 0") Integer page,
+      @RequestParam @Min(value = 1, message = "page must greater than 0") Integer page,
       @Max(value = 500, message = "pageSize must not greater than 500") @RequestParam Integer pageSize) {
     PageResponse<EmployerResponseDto> response = employerService.getAll(page, pageSize);
     return new ResponseEntity<>(APIResponse.success(response), HttpStatus.OK);
@@ -50,14 +50,14 @@ public class EmployerController {
 
   @PostMapping
   public ResponseEntity<APIResponse<?>> createEmployer(
-      @Valid @RequestBody EmployerCreateRequestDto employerCreateRequestDto, BindingResult result) {
-    if (result.hasErrors()) {
-      String errorMessage = result.getFieldErrors().stream()
-          .map(error -> String.format("%s: %s", error.getField(), error.getDefaultMessage()))
-          .collect(Collectors.joining(", "));
-      return new ResponseEntity<>(APIResponse.error(errorMessage, HttpStatus.BAD_REQUEST, 400),
-          HttpStatus.BAD_REQUEST);
-    }
+      @Valid @RequestBody EmployerCreateRequestDto employerCreateRequestDto) {
+//    if (result.hasErrors()) {
+//      String errorMessage = result.getFieldErrors().stream()
+//          .map(error -> String.format("%s: %s", error.getField(), error.getDefaultMessage()))
+//          .collect(Collectors.joining(", "));
+//      return new ResponseEntity<>(APIResponse.error(errorMessage, HttpStatus.BAD_REQUEST, 400),
+//          HttpStatus.BAD_REQUEST);
+//    }
 
     employerService.createEmployer(employerCreateRequestDto);
     return new ResponseEntity<>(APIResponse.builder().statusCode(201).build(), HttpStatus.CREATED);
