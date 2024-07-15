@@ -21,3 +21,6 @@ spring:
       port: 6379
       password: Redis@123
 
+jwt:
+  expiration: 1
+  header: Authorization

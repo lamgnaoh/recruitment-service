@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class EmployerController {
   private final EmployerService employerService;
 
   @GetMapping
+  @PreAuthorize("hasAnyRole('USER')")
   public ResponseEntity<APIResponse<PageResponse<EmployerResponseDto>>> getAll(
       @RequestParam @Min(value = 1, message = "page must greater than 0") Integer page,
       @Max(value = 500, message = "pageSize must not greater than 500") @RequestParam Integer pageSize) {

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import vn.unigap.api.dto.in.EmployerCreateRequestDto;
 import vn.unigap.api.dto.in.EmployerUpdateRequestDto;
@@ -75,6 +77,7 @@ public class EmployerServiceImpl implements EmployerService {
 
   @Override
   public PageResponse<EmployerResponseDto> getAll(Integer page, Integer pageSize) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("name"));
     Page<Employer> allEmployers = employerRepository.findAll(pageable);
     List<EmployerResponseDto> employerResponseDtos = allEmployers.getContent().stream().map(
