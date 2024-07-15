@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import vn.unigap.api.dto.out.APIResponse;
@@ -16,6 +17,7 @@ import vn.unigap.api.dto.out.APIResponse;
 @ControllerAdvice
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
   @org.springframework.web.bind.annotation.ExceptionHandler(ApiException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<APIResponse<?>> handleAPIException(ApiException e) {
     return ResponseEntity.status(e.getErrorCode().getStatus())
         .body(APIResponse.error(e.getErrorCode().getMessage(), e.getErrorCode().getStatus(),
@@ -34,6 +36,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @Override
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
       HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     String fieldErrors = ex.getFieldErrors().stream()

@@ -6,12 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -62,6 +64,9 @@ public class WebSecurityConfig {
         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
         .authorizeHttpRequests(auth ->
             auth.requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/v1/api-docs/**").permitAll()
+                .requestMatchers("/swagger-ui/index.html").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
                 .anyRequest().authenticated());
 //    httpSecurity.oauth2ResourceServer(
 //        oauth2-> oauth2.jwt( jwtConfigurer -> {
@@ -80,6 +85,18 @@ public class WebSecurityConfig {
 
   public static RSAPublicKey readPublicKey(Resource resource) throws Exception {
     return RsaKeyConverters.x509().convert(resource.getInputStream());
+  }
+
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    return web -> web.ignoring()
+        .requestMatchers(HttpMethod.GET,
+            "/",
+            "/*.html",
+            "/favicon.ico",
+            "/**.html",
+            "/**.css",
+            "/**.js");
   }
 
 }

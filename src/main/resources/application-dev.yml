@@ -24,3 +24,6 @@ spring:
 jwt:
   expiration: 1
   header: Authorization
+springdoc:
+  api-docs:
+    path: /v1/api-docs
