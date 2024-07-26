@@ -1,6 +1,7 @@
 package vn.unigap.api.exception;
 
 
+import io.sentry.Sentry;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
   @org.springframework.web.bind.annotation.ExceptionHandler(ApiException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<APIResponse<?>> handleAPIException(ApiException e) {
+    Sentry.captureException(e);
     return ResponseEntity.status(e.getErrorCode().getStatus())
         .body(APIResponse.error(e.getErrorCode().getMessage(), e.getErrorCode().getStatus(),
             e.getErrorCode().getCode()));
@@ -28,6 +30,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
       HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status,
       WebRequest request) {
+    Sentry.captureException(ex);
     String supportedMethods =
         ex.getSupportedMethods() == null ? null : String.join(", ", ex.getSupportedMethods());
     String errorMessage = "Method not supported. Supported methods are " + supportedMethods;
@@ -39,6 +42,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
       HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    Sentry.captureException(ex);
     String fieldErrors = ex.getFieldErrors().stream()
         .map(fieldError -> String.format("%s: %s", fieldError.getField(), fieldError.getDefaultMessage()))
         .collect(Collectors.joining(","));

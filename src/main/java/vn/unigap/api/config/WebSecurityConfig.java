@@ -67,6 +67,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/v1/api-docs/**").permitAll()
                 .requestMatchers("/swagger-ui/index.html").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated());
 //    httpSecurity.oauth2ResourceServer(
 //        oauth2-> oauth2.jwt( jwtConfigurer -> {

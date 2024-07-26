@@ -27,3 +27,19 @@ jwt:
 springdoc:
   api-docs:
     path: /v1/api-docs
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+sentry:
+  dns: https://619fcaa59075f6f59280f5c457c116a7@o4507657919528960.ingest.de.sentry.io/4507657924575312
+  traces-sample-rate: 1.0
+  exception-resolver-order: -2147483647 # catch all exceptions throw, not just unhandle exception
+# Set traces_sample_rate to 1.0 to capture 100%
+# of transactions for performance monitoring.
+# We recommend adjusting this value in production.

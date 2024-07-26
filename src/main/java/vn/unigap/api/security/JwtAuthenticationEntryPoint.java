@@ -1,6 +1,7 @@
 package vn.unigap.api.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.sentry.Sentry;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,5 +37,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
 
     final ObjectMapper mapper = new ObjectMapper();
     mapper.writeValue(response.getOutputStream(), body);
+    Sentry.captureException(authException);
   }
 }
