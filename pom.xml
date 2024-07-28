@@ -17,6 +17,7 @@
   <properties>
     <java.version>17</java.version>
     <jwt.version>0.9.1</jwt.version>
+    <sentry.auth.token>${env.SENTRY_AUTH_TOKEN}</sentry.auth.token>
   </properties>
   <dependencies>
     <dependency>
@@ -141,28 +142,46 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>io.sentry</groupId>
-        <artifactId>sentry-maven-plugin</artifactId>
-        <version>0.0.8</version>
-        <extensions>true</extensions>
-        <configuration>
-          <!-- for showing output of sentry-cli -->
-          <debugSentryCli>true</debugSentryCli>
-          <org>viettel-bl</org>
-          <project>recruitment-service</project>
-          <!-- in case you're self hosting, provide the URL here -->
-          <url>http://localhost:8080/</url>
-          <!-- provide your auth token via SENTRY_AUTH_TOKEN environment variable -->
-          <authToken>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</authToken>
-        </configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
         <executions>
           <execution>
             <goals>
-              <goal>uploadSourceBundle</goal>
+              <goal>read-project-properties</goal>
             </goals>
+            <phase>initialize</phase>
+            <configuration>
+              <files>
+                <file>.env</file>
+              </files>
+            </configuration>
           </execution>
         </executions>
       </plugin>
+<!--      <plugin>-->
+<!--        <groupId>io.sentry</groupId>-->
+<!--        <artifactId>sentry-maven-plugin</artifactId>-->
+<!--        <version>0.0.8</version>-->
+<!--        <extensions>true</extensions>-->
+<!--        <configuration>-->
+<!--          &lt;!&ndash; for showing output of sentry-cli &ndash;&gt;-->
+<!--          <debugSentryCli>true</debugSentryCli>-->
+<!--          <org>viettel-bl</org>-->
+<!--          <project>recruitment-service</project>-->
+<!--          &lt;!&ndash; in case you're self hosting, provide the URL here &ndash;&gt;-->
+<!--&lt;!&ndash;          <url>http://localhost:8080/</url>&ndash;&gt;-->
+<!--&lt;!&ndash;          &lt;!&ndash; provide your auth token via SENTRY_AUTH_TOKEN environment variable &ndash;&gt;&ndash;&gt;-->
+<!--          <authToken>${sentry.auth.token}</authToken>-->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <goals>-->
+<!--              <goal>uploadSourceBundle</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
     </plugins>
   </build>
   <reporting>

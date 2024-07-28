@@ -1,6 +1,17 @@
 version: '3.3'
 
 services:
+  recruitment-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env
+    depends_on:
+      - mysql-db
+      - redis
   mysql-db:
     image: mysql:8.0.33
     environment:
@@ -12,6 +23,7 @@ services:
       - '3306:3306'
     volumes:
       - mysql-db:/var/lib/mysql
+      - ./job_db.sql:/docker-entrypoint-initdb.d/job_db.sql
     restart: on-failure
   redis:
     image: redis:7.2.1-alpine3.18
